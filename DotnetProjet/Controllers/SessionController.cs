@@ -1,0 +1,57 @@
+﻿// Controllers/SessionController.cs
+using Microsoft.AspNetCore.Mvc;
+using DotnetProjet.Entities;
+using DotnetProjet.Services;
+
+namespace DotnetProjet.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class SessionController : ControllerBase
+{
+    private readonly IServices _service;
+    public SessionController(IServices service) => _service = service;
+
+    [HttpGet]
+    public IActionResult GetAll() => Ok(_service.GetAllSessions());
+
+    [HttpGet("{id}")]
+    public IActionResult GetById(int id)
+    {
+        var session = _service.GetSessionById(id);
+        if (session == null) return NotFound(new { message = "Session introuvable." });
+        return Ok(session);
+    }
+
+    [HttpPost]
+    public IActionResult Add([FromBody] Session session)
+    {
+        _service.AddSession(session);
+        return Ok(new { message = "Session ajoutée.", session });
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromBody] Session session)
+    {
+        _service.UpdateSession(id, session);
+        return Ok(new { message = "Session modifiée." });
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        _service.DeleteSession(id);
+        return Ok(new { message = "Session supprimée." });
+    }
+
+    [HttpPost("inscrire")]
+    public IActionResult Inscrire(int userId, int sessionId)
+    {
+        try
+        {
+            _service.Inscrire(userId, sessionId);
+            return Ok(new { message = "Apprenant inscrit avec succès." });
+        }
+        catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
+    }
+}

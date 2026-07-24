@@ -1,0 +1,430 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formateur IA - DotnetProjet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #e6e9f0;
+            --ink: #3d4457;
+            --sub: #8890a6;
+            --accent: #6c7bff;
+            --green: #4caf82;
+            --red: #e0645f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 16px;
+        }
+
+        .topbar {
+            width: 100%;
+            max-width: 760px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: var(--sub);
+        }
+
+            .topbar a {
+                color: var(--accent);
+                text-decoration: none;
+                font-weight: 600;
+            }
+
+        .container {
+            background: var(--bg);
+            border-radius: 28px;
+            max-width: 760px;
+            width: 100%;
+            padding: 32px;
+            box-shadow: 14px 14px 28px #c5c9d4, -14px -14px 28px #ffffff;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+            header h1 {
+                font-weight: 700;
+                font-size: 26px;
+                margin-bottom: 6px;
+            }
+
+            header p {
+                font-size: 13px;
+                color: var(--sub);
+            }
+
+        .video-wrap {
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 20px;
+            box-shadow: inset 6px 6px 12px #c5c9d4, inset -6px -6px 12px #ffffff;
+        }
+
+        #persona-video {
+            width: 100%;
+            border-radius: 14px;
+            background: #1c2030;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            display: block;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        button {
+            padding: 12px 26px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Quicksand', sans-serif;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            margin: 0 6px;
+            background: var(--bg);
+            color: var(--ink);
+            box-shadow: 6px 6px 12px #c5c9d4, -6px -6px 12px #ffffff;
+            transition: .15s;
+        }
+
+            button:active:not(:disabled) {
+                box-shadow: inset 4px 4px 8px #c5c9d4, inset -4px -4px 8px #ffffff;
+            }
+
+        #start-button {
+            color: var(--green);
+        }
+
+        #stop-button {
+            color: var(--red);
+        }
+
+        button:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+
+        #status {
+            text-align: center;
+            font-size: 13px;
+            color: var(--sub);
+            margin-bottom: 20px;
+        }
+
+        .chat-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+            margin: 0 0 10px 4px;
+        }
+
+        #chat {
+            height: 280px;
+            overflow-y: auto;
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: inset 6px 6px 12px #c5c9d4, inset -6px -6px 12px #ffffff;
+            scroll-behavior: smooth;
+        }
+
+        .msg {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 13.5px;
+            line-height: 1.4;
+            animation: fadeIn .18s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .msg.user {
+            align-self: flex-end;
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .msg.persona {
+            align-self: flex-start;
+            background: #fff;
+            color: var(--ink);
+        }
+
+        .msg .who {
+            font-size: 10px;
+            opacity: .7;
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--sub);
+            font-size: 13px;
+            margin-top: 20px;
+        }
+
+        .typing {
+            align-self: flex-start;
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: #fff;
+            border-radius: 14px;
+        }
+
+            .typing span {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--sub);
+                animation: bounce 1.2s infinite;
+            }
+
+                .typing span:nth-child(2) {
+                    animation-delay: .2s;
+                }
+
+                .typing span:nth-child(3) {
+                    animation-delay: .4s;
+                }
+
+        @keyframes bounce {
+            0%,60%,100% {
+                transform: translateY(0);
+                opacity: .4;
+            }
+
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-family: 'Quicksand', sans-serif;
+            border: none;
+            border-radius: 14px;
+            outline: none;
+            background: var(--bg);
+            box-shadow: inset 4px 4px 8px #c5c9d4, inset -4px -4px 8px #ffffff;
+        }
+
+        #send-button {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="/">← Retour à l'accueil</a>
+        <span>Réalisé par <strong>AYATALLAH Abderrahman</strong></span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Formateur IA</h1>
+            <p>Parlez au micro OU écrivez votre question ci-dessous</p>
+        </header>
+
+        <div class="video-wrap">
+            <video id="persona-video" autoplay playsinline></video>
+        </div>
+
+        <div class="controls">
+            <button id="start-button">▶ Démarrer</button>
+            <button id="stop-button" disabled>⏹ Arrêter</button>
+        </div>
+
+        <div id="status">Prêt à démarrer.</div>
+
+        <div class="chat-title">Conversation</div>
+        <div id="chat">
+            <div class="empty">La conversation apparaîtra ici...</div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="Écrivez votre question ici..." disabled />
+            <button id="send-button" disabled>Envoyer</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from "https://esm.sh/@anam-ai/js-sdk@latest";
+
+        let anamClient = null;
+        let isWaitingReply = false;
+        const startButton = document.getElementById("start-button");
+        const stopButton = document.getElementById("stop-button");
+        const statusEl = document.getElementById("status");
+        const chatEl = document.getElementById("chat");
+        const messageInput = document.getElementById("message-input");
+        const sendButton = document.getElementById("send-button");
+
+        function scrollToBottom() {
+            chatEl.scrollTop = chatEl.scrollHeight;
+        }
+
+        function showTyping() {
+            hideTyping();
+            const div = document.createElement("div");
+            div.className = "typing";
+            div.id = "typing-indicator";
+            div.innerHTML = "<span></span><span></span><span></span>";
+            chatEl.appendChild(div);
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            const existing = document.getElementById("typing-indicator");
+            if (existing) existing.remove();
+        }
+
+        function renderMessages(messages) {
+            hideTyping();
+            chatEl.innerHTML = "";
+            if (!messages || messages.length === 0) {
+                chatEl.innerHTML = '<div class="empty">La conversation apparaîtra ici...</div>';
+                return;
+            }
+            messages.forEach(m => {
+                const div = document.createElement("div");
+                const isUser = m.role === "user";
+                div.className = "msg " + (isUser ? "user" : "persona");
+                div.innerHTML = '<span class="who">' + (isUser ? "Vous" : "Formateur") + '</span>' + m.content;
+                chatEl.appendChild(div);
+            });
+            isWaitingReply = false;
+            scrollToBottom();
+        }
+
+        async function startChat() {
+            try {
+                startButton.disabled = true;
+                statusEl.textContent = "Connexion en cours...";
+
+                const response = await fetch("/api/FormateurIA/session-token", { method: "POST" });
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error("Backend erreur " + response.status + " : " + errText);
+                }
+                const data = await response.json();
+                const sessionToken = data.sessionToken;
+
+                anamClient = createClient(sessionToken);
+
+                anamClient.addListener("MESSAGE_HISTORY_UPDATED", (messages) => {
+                    renderMessages(messages);
+                });
+
+                await anamClient.streamToVideoElement("persona-video");
+
+                stopButton.disabled = false;
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                statusEl.textContent = "✅ Connecté ! Parlez ou écrivez votre question.";
+            } catch (error) {
+                console.error("ERREUR:", error);
+                statusEl.textContent = "❌ Erreur : " + error.message;
+                startButton.disabled = false;
+            }
+        }
+
+        function stopChat() {
+            if (anamClient) {
+                anamClient.stopStreaming();
+                anamClient = null;
+            }
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            isWaitingReply = false;
+            statusEl.textContent = "Session arrêtée.";
+        }
+
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || !anamClient || isWaitingReply) return;
+
+            // Affiche immédiatement le message de l'utilisateur, sans attendre le serveur
+            const emptyEl = chatEl.querySelector(".empty");
+            if (emptyEl) emptyEl.remove();
+            const div = document.createElement("div");
+            div.className = "msg user";
+            div.innerHTML = '<span class="who">Vous</span>' + text;
+            chatEl.appendChild(div);
+            scrollToBottom();
+
+            messageInput.value = "";
+            isWaitingReply = true;
+            sendButton.disabled = true;
+            showTyping();
+
+            try {
+                await anamClient.sendUserMessage(text);
+                // La réponse arrivera via MESSAGE_HISTORY_UPDATED, qui redessine tout et enlève le "typing"
+            } catch (error) {
+                console.error("Erreur envoi:", error);
+                hideTyping();
+                isWaitingReply = false;
+                statusEl.textContent = "❌ Erreur lors de l'envoi du message.";
+            } finally {
+                sendButton.disabled = false;
+            }
+        }
+
+        startButton.addEventListener("click", startChat);
+        stopButton.addEventListener("click", stopChat);
+        sendButton.addEventListener("click", sendMessage);
+        messageInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>

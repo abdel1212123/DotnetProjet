@@ -15,6 +15,6 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="Root\**\*" CopyToPublishDirectory="PreserveNewest" />
+		<Content Include="Root/**" CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 </Project>
